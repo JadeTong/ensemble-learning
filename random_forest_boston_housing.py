@@ -41,18 +41,80 @@ boston.isnull().any()  # all 'False'
 
 #%%                       3.数据准备
 '''
-因为随机森林作为树形模型的一种，主要关心变量的分布和变量之间的条件概率而非变量本身的取值，所以不需要进行数据标准化。
+因为随机森林的工作原理基于决策树，而决策树对特征的分布和量纲并不敏感，主要关心变量的分布和变量之间的条件概率而非变量本身的取值，所以不需要进行数据标准化。
 '''
+#%%% 指定特征变量和目标变量
+X = boston.drop(columns='MEDV')
+y = boston['MEDV']
 
-
-
-
-
+#%%% 分割训练集与测试集
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.3, random_state=0)
 
 #%%                       4.模型训练
+'随机森林可以用来解决回归和分类问题，sklearn包中分别用sklearn.ensemble里的 RandomForestRegressor()和RandomForestClassifier()，现在用于回归。'
+from sklearn.ensemble import RandomForestRegressor
+rf = RandomForestRegressor(n_estimators=20, max_depth=3, random_state=0) 
+#'n_estimators'为随机森林的决策树数量，'max_depth'为树的最大深度（限制深度可以防止过拟合，但可能降低性能）
+rf.fit(X_train, y_train)
 
+#输出R方，看下模型拟合效果
+print(rf.score(X_train, y_train))  #0.8799791177998583
+print(rf.score(X_test, y_test))    #0.7591788374605679
 
 #%%                       5.模型评价
+y_pred = rf.predict(X_test)
+
+# 评估模型，分别用平均绝对误差MAE、均方误差MSE、均方根误差RMSE和平均绝对误差百分比MAPE
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import numpy as np
+print("MAE", mean_absolute_error(y_test, y_pred))
+print("MSE：", mean_squared_error(y_test, y_pred))
+print("RMSE：", np.sqrt(mean_squared_error(y_test, y_pred)))
+print("MAPE：", np.mean(np.abs((y_test-y_pred)/y_test)) * 100)
+print("R方：", r2_score(y_test, y_pred))
+# MAE 2.9227971874884595
+# MSE： 20.052094905514526
+# RMSE： 4.47795655467028
+# MAPE： 15.315598016674864
+# R方： 0.7591788374605679
+
+#明显模型回归效果不佳，要调参
+
+#%%                       6.调参
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
